@@ -1,0 +1,59 @@
+version: "3.9"
+
+networks:
+  app-net:
+
+volumes:
+  db-data:
+
+services:
+  
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    container_name: postgres
+    environment:
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_USER: mydatabaseuser
+      POSTGRES_DB: mydatabase
+    networks:
+      - app-net
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # image: sheriffexcel/realworld-app
+    tty: true
+    command: >
+      sh -c "python manage.py makemigrations &&
+            python manage.py migrate &&
+            gunicorn realworld.wsgi:application --bind 0.0.0.0:8000"
+    ports:
+      - 8000:8000
+    environment:
+      - DB_NAME=mydatabase
+      - DB_PASSWORD=mypassword
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=mydatabaseuser
+    depends_on:
+      - db
+    networks:
+      - app-net
+  
+  nginx:
+    build: ./nginx
+    ports:
+      - 1337:80
+    depends_on:
+      - app
+    networks:
+      - app-net
+
+
