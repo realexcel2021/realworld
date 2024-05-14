@@ -17,8 +17,7 @@ services:
       POSTGRES_PASSWORD: mypassword
       POSTGRES_USER: mydatabaseuser
       POSTGRES_DB: mydatabase
-    networks:
-      - app-net
+    
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
@@ -44,8 +43,7 @@ services:
       - DB_USER=mydatabaseuser
     depends_on:
       - db
-    networks:
-      - app-net
+    
   
   nginx:
     build: ./nginx
@@ -53,7 +51,6 @@ services:
       - 1337:80
     depends_on:
       - app
-    networks:
-      - app-net
+    
 
 
