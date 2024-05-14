@@ -35,7 +35,7 @@ services:
             python manage.py migrate &&
             gunicorn realworld.wsgi:application --bind 0.0.0.0:8000"
     ports:
-      - 8000:8000
+      - 8001:8000
     environment:
       - DB_NAME=mydatabase
       - DB_PASSWORD=mypassword
